@@ -10,6 +10,7 @@ install:
   - ai_translate
   - field_validation
   - ai_validations
+  - ai_reading_age
 config:
   actions:
     editor.editor.wysiwyg:

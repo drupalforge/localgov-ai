@@ -1,0 +1,35 @@
+uuid: ca731974-dca0-4e47-b55f-1171bfe01b06
+langcode: en
+status: true
+dependencies: {  }
+id: improve_readability
+label: 'Improve readability'
+description: 'An agent to assess and improve the readability of text.'
+system_prompt: |-
+  You will be given some text. Use the text statistics tool to evaluate the reading grade of the content. All HTML markup should be preserved.
+
+  Then suggest changes to the text to reduce to a readability grade to lower than grade 5, checking using the tool each time. Do not attempt to make your own assessment on the readability grade. HTML markup should be preserved or modified in keeping with the original copy.
+
+  Stop when you lower than grade 5, or have made a maximum of 5 attempts.
+
+  When you have finished, return a short explanation of the changes you have made. Do not include the final copy.
+
+  It is important to NOT remove any detail, or change the core of what's being communicated.
+secured_system_prompt: '[ai_agent:agent_instructions]'
+tools:
+  text_statistics: true
+tool_settings:
+  text_statistics:
+    return_directly: 0
+orchestration_agent: false
+triage_agent: false
+max_loops: 10
+default_information_tools: ''
+tool_usage_limits:
+  text_statistics:
+    text:
+      action: ''
+      hide_property: 0
+      values: ''
+exclude_users_role: false
+masquerade_roles: {  }

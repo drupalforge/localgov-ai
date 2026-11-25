@@ -1,0 +1,9 @@
+name: 'AI Reading Age'
+type: module
+description: 'Provides a reading age CKEditor plugin.'
+package: Custom
+core_version_requirement: ^10 || ^11
+dependencies:
+  - ai:ai
+  - ai:ai_content_suggestions
+  - ai_agents:ai_agents

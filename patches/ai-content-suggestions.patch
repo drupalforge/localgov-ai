@@ -1,0 +1,41 @@
+diff --git a/modules/ai_content_suggestions/src/AiContentSuggestionsFormAlter.php b/modules/ai_content_suggestions/src/AiContentSuggestionsFormAlter.php
+index cfac9bf5..ce46b14d 100644
+--- a/modules/ai_content_suggestions/src/AiContentSuggestionsFormAlter.php
++++ b/modules/ai_content_suggestions/src/AiContentSuggestionsFormAlter.php
+@@ -4,6 +4,7 @@ declare(strict_types=1);
+ 
+ namespace Drupal\ai_content_suggestions;
+ 
++use Drupal\Core\Ajax\AjaxResponse;
+ use Drupal\Core\Entity\ContentEntityInterface;
+ use Drupal\Core\Entity\EntityTypeManagerInterface;
+ use Drupal\Core\Form\FormStateInterface;
+@@ -47,7 +48,7 @@ final class AiContentSuggestionsFormAlter implements AiContentSuggestionsFormAlt
+   /**
+    * {@inheritdoc}
+    */
+-  public static function getPluginResponse(array $form, FormStateInterface $form_state): array {
++  public static function getPluginResponse(array $form, FormStateInterface $form_state): array|AjaxResponse {
+     $return = [];
+ 
+     if ($trigger = $form_state->getTriggeringElement()) {
+diff --git a/modules/ai_content_suggestions/src/AiContentSuggestionsFormAlterInterface.php b/modules/ai_content_suggestions/src/AiContentSuggestionsFormAlterInterface.php
+index 2e2eafd3..eda42f67 100644
+--- a/modules/ai_content_suggestions/src/AiContentSuggestionsFormAlterInterface.php
++++ b/modules/ai_content_suggestions/src/AiContentSuggestionsFormAlterInterface.php
+@@ -4,6 +4,7 @@ declare(strict_types=1);
+ 
+ namespace Drupal\ai_content_suggestions;
+ 
++use Drupal\Core\Ajax\AjaxResponse;
+ use Drupal\Core\Form\FormStateInterface;
+ 
+ /**
+@@ -32,6 +33,6 @@ interface AiContentSuggestionsFormAlterInterface {
+    * @return array
+    *   The appropriate section of the updated form.
+    */
+-  public static function getPluginResponse(array $form, FormStateInterface $form_state): array;
++  public static function getPluginResponse(array $form, FormStateInterface $form_state): array|AjaxResponse;
+ 
+ }
