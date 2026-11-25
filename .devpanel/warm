@@ -10,6 +10,9 @@ chdir(dirname(__DIR__) . '/web');
 $_SERVER['SERVER_NAME'] = 'localhost';
 $_SERVER['SERVER_PORT'] = '80';
 $_SERVER['SCRIPT_NAME'] = '/index.php';
+// Drupal 11.4+ boots index.php through symfony/runtime, which requires
+// SCRIPT_FILENAME; point it at the front controller, not this script.
+$_SERVER['SCRIPT_FILENAME'] = getcwd() . '/index.php';
 $_SERVER['REQUEST_URI'] = $argv[1] ?? '/';
 ob_start(fn($buffer, $phase) => TRUE, 1);
 require 'index.php';
