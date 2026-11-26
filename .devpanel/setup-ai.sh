@@ -24,21 +24,18 @@ if [ -n "${DP_AI_VIRTUAL_KEY:-}" ]; then
   drush -n cset ai.settings default_providers.text_to_speech.provider_id litellm
   drush -n cset ai.settings default_providers.text_to_speech.model_id openai/gpt-4o-mini-realtime-preview
 
-  # Check if psql is installed.
-  if command -v psql >/dev/null 2>&1; then
+  # Set up the vector database if a PostgreSQL service is provided. The
+  # connection details come from the PG* variables; settings.devpanel.php
+  # applies them at runtime, and the password is read by a key.
+  if [ -n "${PGHOST:-}" ]; then
+    PGPORT="${PGPORT:-${DB_PORT:-5432}}" psql --quiet -c "CREATE EXTENSION IF NOT EXISTS vector;"
     time drush pm:en -y ai_vdb_provider_postgres ai_search
-    drush -n key-save postgres_db_password --label="Postgres DB Password" --key-provider=config --key-provider-settings='{
-      "key_value": "db"
+    drush -n key-save postgres_db_password --label="Postgres DB Password" --key-provider=env --key-provider-settings='{
+      "env_variable": "PGPASSWORD",
+      "base64_encoded": false,
+      "strip_line_breaks": true
     }'
     drush -n cset ai_vdb_provider_postgres.settings password postgres_db_password
-    if env | grep -q DDEV_PROJECT; then
-      drush -n cset ai_vdb_provider_postgres.settings host pgvector
-    else
-      drush -n cset ai_vdb_provider_postgres.settings host localhost
-    fi
-    drush -n cset ai_vdb_provider_postgres.settings port 5432
-    drush -n cset ai_vdb_provider_postgres.settings default_database db
-    drush -n cset ai_vdb_provider_postgres.settings username db
   fi
 
   # Get AI Image Alt Text
@@ -50,11 +47,15 @@ if [ -n "${DP_AI_VIRTUAL_KEY:-}" ]; then
   # Apply the localgov_ai recipe.
   drush recipe ../recipes/localgov_ai
 
-  # Do this 16 times (80 contents).
-  for i in {1..16}; do
-    # Wait for 5 seconds to not run into rate limits.
-    sleep 5
-    # Start indexing.
-    drush sapi-i content_for_ai --limit=5
-  done
+  # Index the content into the vector database, 16 times (80 contents).
+  if [ -n "${PGHOST:-}" ]; then
+    # Clearing the index creates its table in the vector database.
+    drush -n sapi-c content_for_ai
+    for i in {1..16}; do
+      # Wait for 5 seconds to not run into rate limits.
+      sleep 5
+      # Start indexing.
+      drush sapi-i content_for_ai --limit=5
+    done
+  fi
 fi
