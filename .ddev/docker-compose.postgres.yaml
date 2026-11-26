@@ -1,0 +1,30 @@
+# PostgreSQL with pgvector for the AI vector database, mirroring the service
+# DevPanel provides. The web container gets the standard libpq PG* variables,
+# which psql, pg_dump and settings.devpanel.php all read.
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: ddev-${DDEV_SITENAME}-postgres
+    restart: "no"
+    environment:
+      POSTGRES_USER: vectordb
+      POSTGRES_PASSWORD: vectordb
+      POSTGRES_DB: default
+    expose:
+      - "5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    labels:
+      com.ddev.site-name: ${DDEV_SITENAME}
+      com.ddev.approot: ${DDEV_APPROOT}
+
+  web:
+    environment:
+      - PGHOST=postgres
+      - PGPORT=5432
+      - PGUSER=vectordb
+      - PGPASSWORD=vectordb
+      - PGDATABASE=default
+
+volumes:
+  postgres-data:
